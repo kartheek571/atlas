@@ -1,0 +1,120 @@
+package com.mycode.atlas.service.cart;
+
+import java.math.BigDecimal;
+
+import org.springframework.stereotype.Service;
+
+import com.mycode.atlas.exception.ResourceNotFound;
+import com.mycode.atlas.model.Cart;
+import com.mycode.atlas.model.CartItem;
+import com.mycode.atlas.model.Product;
+import com.mycode.atlas.repository.CartItemRepository;
+import com.mycode.atlas.repository.CartReposity;
+import com.mycode.atlas.service.product.IProductService;
+import com.mycode.atlas.service.cart.ICartService;
+
+import lombok.RequiredArgsConstructor;
+
+//@RequiredArgsConstructor
+
+@Service
+public class CartItemService implements ICartItemService {
+
+	private final CartItemRepository cartItemRepository;
+	private final IProductService iProductService;
+	private final ICartService iCartService;
+	private final CartReposity cartRepo;
+
+	public CartItemService(CartItemRepository cartItemRepository, IProductService iProductService,
+			ICartService iCartService,CartReposity cartRepo) {
+		this.cartItemRepository = cartItemRepository;
+		this.iProductService = iProductService;
+		this.iCartService = iCartService;
+		this.cartRepo=cartRepo;
+	}
+
+	@Override
+	public void addItemToCart(Long cartId, Long productId, int quantity) {
+
+		Cart cart = iCartService.getCart(cartId);
+		Product product = iProductService.getProductById(productId);
+
+		CartItem cartItem = cart.getItems().stream().filter(item -> item.getProduct().getId().equals(productId))
+				.findFirst().orElse(new CartItem()); // still error persists
+
+		
+		
+		
+		if(cartItem.getId() == null)
+		{	
+			cartItem.setCart(cart);
+			cartItem.setProduct(product);  
+			cartItem.setQuantity(quantity);
+			
+			   cartItem.setUnitPrice(product.getPrice());
+		}else 
+		{
+			cartItem.setQuantity(cartItem.getQuantity()+quantity);
+		}
+		cartItem.setTotalPrice();
+		cart.addItem(cartItem);
+		cartItemRepository.save(cartItem);
+		cartRepo.save(cart);
+		
+		
+		
+		
+	}
+
+	@Override
+	public void removeItemFromCart(Long cartId, Long productId) {
+
+		
+		Cart cart= iCartService.getCart(cartId);
+		 CartItem itemToRemove = getCartItem(cartId, productId);
+		cart.removeItem(itemToRemove);
+		cartRepo.save(cart);
+		
+		
+		
+	}
+
+	@Override
+	public void updateItemQuantity(Long cartId, Long productId, int quantity) {
+		
+		
+		Cart cart = iCartService.getCart(cartId);
+		cart.getItems().stream().filter(item->item.getProduct().getId().equals(productId))
+		.findFirst()
+		.ifPresent(
+				
+				item ->{
+					item.setQuantity(quantity);
+					item.setUnitPrice(item.getProduct().getPrice());
+					item.setTotalPrice();
+					
+				});
+		
+		BigDecimal totalAmmount= cart.getTotatlAmmount();
+		cart.setTotatlAmmount(totalAmmount);
+		
+	cartRepo.save(cart);			
+				
+		
+		
+	}
+	
+	
+	public CartItem getCartItem(Long cartId , Long productId)
+	{
+		Cart cart = iCartService.getCart(cartId);
+		
+		return cart.getItems().stream()
+				.filter(item->item.getProduct().getId().equals(productId))
+				.findFirst().orElseThrow(()->new ResourceNotFound("product Not found"));
+	}
+
+
+
+
+}
