@@ -104,8 +104,8 @@ public class OrderService  implements IOrderService {
 //	        return null;
 	    }
 	  
-	  
-	  private  OrderDto  convertToOrderDto (Order order)
+	  @Override
+	  public   OrderDto  convertToOrderDto (Order order)
 	  {
 		  return modelMapper.map(order, OrderDto.class);
 	  }

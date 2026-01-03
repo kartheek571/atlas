@@ -34,7 +34,8 @@ public class OrderController {
 	{
 		try {
 			Order order =orderService.placeOdrer(userId);
-			return ResponseEntity.ok(new ApiResponse("Sucessfully placed order!", order));
+			OrderDto orderDto =orderService.convertToOrderDto(order);
+			return ResponseEntity.ok(new ApiResponse("Sucessfully placed order!", orderDto));
 		} catch (Exception e) {
 			
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

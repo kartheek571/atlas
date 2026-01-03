@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mycode.atlas.exception.AlreadyExists;
 import com.mycode.atlas.exception.ProductNotFound;
 import com.mycode.atlas.model.Product;
 import com.mycode.atlas.request.AddProductRequest;
@@ -61,9 +62,9 @@ public class ProductController {
 		try {
 			Product  sproduct=productService.addProduct(product);
 			return  ResponseEntity.ok(new ApiResponse("product added successfully", sproduct));
-		} catch (Exception e) {
+		} catch (AlreadyExists e) {
 			// TODO Auto-generated catch block
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse("failed to add  product ", null));
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse("failed to add  product ", null));
 		}
 	}
 	

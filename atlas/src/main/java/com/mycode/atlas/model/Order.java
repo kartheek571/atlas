@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mycode.atlas.enums.OrderStatus;
 
 import jakarta.persistence.CascadeType;
@@ -39,10 +40,11 @@ public class Order {
 	private BigDecimal totalAmount;
 	@Enumerated(EnumType.STRING)
 	private OrderStatus orderStatus;
+	@JsonIgnore
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<OrderItem> orderItems=new HashSet<>();
 	
-
+	@JsonIgnore
 	   @ManyToOne
 	   @JoinColumn(name="user_id")
 	   private User user;

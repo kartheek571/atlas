@@ -1,5 +1,6 @@
 package com.mycode.atlas.service.product;
 
+import java.nio.file.FileAlreadyExistsException;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.mycode.atlas.exception.AlreadyExists;
 import com.mycode.atlas.exception.ProductNotFound;
 import com.mycode.atlas.model.Category;
 import com.mycode.atlas.model.Product;
@@ -29,6 +31,17 @@ public class ProductService  implements IProductService {
 
 	@Override
 	public Product addProduct(AddProductRequest request) {
+		
+		
+		if(productExists(request.getName(), request.getBrand()))
+		{
+			throw new AlreadyExists(request.getName()+" "+request.getBrand()+"");
+		}
+		
+		
+		
+		
+		
 		Category category = Optional.ofNullable(categoryRepo.findByName(request.getCategory().getName()))
 				.orElseGet(
 	()->{Category  newCategory= new Category(request.getCategory().getName());
@@ -41,6 +54,16 @@ public class ProductService  implements IProductService {
 			
 		
 		
+		
+	}
+	
+	private boolean productExists(String name, String brand)
+	{
+		
+		
+		return productRepo.existsByNameAndBrand(name, brand);
+		
+	
 		
 	}
 	

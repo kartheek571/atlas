@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mycode.atlas.enums.OrderStatus;
 
 import jakarta.persistence.Entity;
@@ -31,7 +32,7 @@ public class OrderItem {
 	private Long id;
 	private int quantity;
 	private BigDecimal price;
-	
+
 	@ManyToOne
 	@JoinColumn(name ="order_id")
 	private Order order ;
