@@ -16,4 +16,6 @@ public interface IUserService {
 
 	UserDto convertUsertoDto(User user);
 
+	User getAuthenticatedUser();
+
 }

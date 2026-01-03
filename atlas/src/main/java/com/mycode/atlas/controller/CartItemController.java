@@ -2,6 +2,7 @@ package com.mycode.atlas.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 
 import com.mycode.atlas.exception.ResourceNotFound;
 import com.mycode.atlas.model.Cart;
@@ -18,6 +20,7 @@ import com.mycode.atlas.service.cart.ICartItemService;
 import com.mycode.atlas.service.cart.ICartService;
 import com.mycode.atlas.service.user.IUserService;
 
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 
 
@@ -29,6 +32,7 @@ public class CartItemController {
 	private final ICartItemService cartICartItemService;
 	private final ICartService cartService;
 	private final IUserService userService;
+
 	@PostMapping("/Item/add")
 	public ResponseEntity<ApiResponse> addItemToCart( @RequestParam Long productId,  @RequestParam Integer quantity)
 	{
@@ -36,7 +40,7 @@ public class CartItemController {
 			
 			
 			
-			User user = userService.getUserById(1L);
+			User user = userService.getAuthenticatedUser();
 			Cart	cart=cartService.initializeCart(user);
 			
 			cartICartItemService.addItemToCart(cart.getId(), productId, quantity);
@@ -45,6 +49,10 @@ public class CartItemController {
 		
 			
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+		}
+		catch (JwtException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(e.getMessage(), null));
+			// TODO: handle exception
 		}
 	}
 	

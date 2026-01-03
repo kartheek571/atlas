@@ -1,0 +1,19 @@
+package com.mycode.atlas.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class JwtResponse {
+	
+	private Long id;
+	private String token;
+
+}

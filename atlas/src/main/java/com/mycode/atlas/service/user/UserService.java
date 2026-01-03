@@ -3,6 +3,9 @@ package com.mycode.atlas.service.user;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.mycode.atlas.dto.UserDto;
@@ -24,6 +27,7 @@ public class UserService  implements IUserService {
 	private final UserRepository userRepo;
 	
 	private final ModelMapper modelMapper;
+	private final PasswordEncoder passwordEncoder;
 	
 	
 	@Override
@@ -41,7 +45,7 @@ public class UserService  implements IUserService {
 				.map(req->{
 					User user = new User();
 					user.setEmail(request.getEmail());
-					user.setPassword(req.getPassword());
+					user.setPassword(   passwordEncoder.encode(req.getPassword())   );
 					user.setFirstname(req.getFirstname());
 					user.setLastname(req.getLastname());
 					return userRepo.save(user);
@@ -75,6 +79,15 @@ public class UserService  implements IUserService {
 		
 		
 		return modelMapper.map(user, UserDto.class);
+	}
+
+	@Override
+	public User getAuthenticatedUser() {
+
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			String email=authentication.getName();
+			return userRepo.findByEmail(email);
+	
 	}
 	
 	

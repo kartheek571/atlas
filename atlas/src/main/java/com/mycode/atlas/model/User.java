@@ -18,6 +18,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name="users")
 public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,11 +47,13 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Order> order;
 	
-	@ManyToMany(fetch = FetchType.EAGER, cascade = 
-		{CascadeType.MERGE,CascadeType.DETACH, CascadeType.MERGE,CascadeType.REFRESH} )
-	@JoinTable(name ="user_roles", joinColumns=@JoinColumn(name="user_id", referencedColumnName = "id") 
-	,inverseJoinColumns = @JoinColumn(name="role_id", referencedColumnName = "id") )
-	
+	@JsonIgnore
+	@ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+	@JoinTable(
+	    name = "user_roles",
+	    joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+	    inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+	)
 	private Collection<Role> roles= new HashSet<>();
 	
 
