@@ -26,7 +26,7 @@ public class CartService  implements ICartService {
 
 	@Override
 	public Cart getCart(long Id) {
-		// TODO Auto-generated method stub
+	
 		
 		
 		Cart cart= cartRepo.findById(Id).orElseThrow(
@@ -54,7 +54,7 @@ public class CartService  implements ICartService {
 	public BigDecimal getTotatlPrice(long id) {
 	
 		Cart cart = getCart(id);
-		return cart.getTotatlAmmount();     //.getItems().stream().map(CartItem :: getTotatlPrice).reduce(BigDecimal.ONE.ZERO, BigDecimal::add);
+		return cart.getTotatlAmmount();     
 
 	}
 	
@@ -72,7 +72,10 @@ public class CartService  implements ICartService {
 		return cartRepo.findByUserId(userId);
 	}
 	
-	
+	public void saveCart(Cart cart)
+	{
+		cartRepo.save(cart);
+	}
 	
 
 }
